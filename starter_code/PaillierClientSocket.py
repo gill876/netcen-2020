@@ -13,22 +13,22 @@ import sys
 
 class NumTheory:
     
-	@staticmethod
+    @staticmethod
     def expMod(b,n,m):
         """Computes the modular exponent of a number"""
         """returns (b^n mod m)"""
         if n==0:
             return 1
         elif n%2==0:
-            return expMod((b*b)%m, n/2, m)
+            return NumTheory.expMod((b*b)%m, n/2, m)
         else:
-            return(b*expMod(b,n-1,m))%m
+            return(b*NumTheory.expMod(b,n-1,m))%m
 	
 class PaillierClientSocket:
 
     def __init__(self, host, port):
         # Add code to initialize this class.
-		pass
+        pass
         
     def ProcessMsgs(self):
         """Main event processing method"""
