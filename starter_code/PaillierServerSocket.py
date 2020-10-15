@@ -177,8 +177,9 @@ if __name__ == "__main__":
         s.myreceive()
         msg = s.ProcessMsgs()
 
+        if msg[0] == 0:
+            break
+
         for m in msg:
-            if m == 0:
-                break
             s.mysend(m)
             time.sleep(1)
