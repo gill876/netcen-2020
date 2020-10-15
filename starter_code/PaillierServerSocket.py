@@ -6,7 +6,7 @@
 # Version: 0.1.1
 #!/usr/bin/python3
 
-import socket
+from socket import socket, gethostbyname, gethostname, AF_INET, SOCK_STREAM
 import random
 import math
 import sys
@@ -68,15 +68,23 @@ class PaillierServerSocket:
     def __init__(self, host, port):
         # Add code to initialize this class.
 		# Optional: set options to reuse socket
-        pass
+        self.host = host
+        self.port = port
         
     def ProcessMsgs(self):
         """Main event processing method"""
         pass
 
-    def connect(self, host, port):
+    def connect(self, host=None, port=None):
         # Add code to connect to a host and port
-        pass
+
+        # Use default host and port if it was not specified
+        host = self.host if host is None else host
+        host = self.port if port is None else port
+
+        # Create socket
+        self.s = socket(AF_INET, SOCK_STREAM)
+        self.s.bind((host, port))
     
     def mysend(self, msg):
         """Add code here to send message into the socket"""
