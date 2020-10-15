@@ -6,7 +6,7 @@
 # Version: 0.1.1
 #!/usr/bin/python3
 
-from socket import socket, gethostbyname, gethostname, AF_INET, SOCK_STREAM
+from socket import socket, AF_INET, SOCK_STREAM
 import random
 import math
 import sys
@@ -70,32 +70,44 @@ class PaillierServerSocket:
 		# Optional: set options to reuse socket
         self.host = host
         self.port = port
+        self.n, self.gen = None, None
         
     def ProcessMsgs(self):
         """Main event processing method"""
-        pass
+        msg_lst = self.data.split(" ")
+        code, rest = int(msg_lst[0]), msg_lst[1]
+
+        if code == 100:
+            output = f"105 Key {self.n} {self.gen}"
+            return output
+        else:
+            self.s.close()
+            print("Closing Server")
+            return 0
 
     def connect(self, host=None, port=None):
         # Add code to connect to a host and port
 
         # Use default host and port if it was not specified
         host = self.host if host is None else host
-        host = self.port if port is None else port
+        port = self.port if port is None else port
 
         # Create socket
         self.s = socket(AF_INET, SOCK_STREAM)
         self.s.bind((host, port))
+        self.s.listen(2)
+
+        self.conn, self.addr = self.s.accept()
     
     def mysend(self, msg):
         """Add code here to send message into the socket"""
-        self.s.sendto(msg.encode('utf-8'), self.addr)
+        self.conn.send(msg.encode('utf-8'))
         print(f"\nSent: \"{msg}\" to \"{self.addr}\"")
     
     def myreceive(self):
         """Add code here to read data from the socket"""
         
-        self.data, self.addr = s.recvfrom(1024)
-        self.data = self.data.decode('utf-8')
+        self.data = self.conn.recv(1024).decode('utf-8')
 
         print(
             f"\nClient addr: \"{self.addr}\"" +
@@ -135,3 +147,15 @@ if __name__ == "__main__":
     
     print("Server of ____")
     s = PaillierServerSocket(HOST,PORT)
+    s.gen = str(gen)
+    s.n = str(n)
+
+    s.connect()
+
+    while True:
+        s.myreceive()
+        msg = s.ProcessMsgs()
+
+        if msg == 0:
+            break
+        s.mysend(msg)

@@ -6,7 +6,7 @@
 # Version: 0.1.1
 #!/usr/bin/python3
 
-import socket
+from socket import socket, AF_INET, SOCK_STREAM
 import random
 import math
 import sys
@@ -28,7 +28,8 @@ class PaillierClientSocket:
 
     def __init__(self, host, port):
         # Add code to initialize this class.
-        pass
+        self.s = socket(AF_INET, SOCK_STREAM)
+        self.s.connect((host, port))
         
     def ProcessMsgs(self):
         """Main event processing method"""
@@ -36,11 +37,15 @@ class PaillierClientSocket:
 
     def mysend(self, msg):
         """Add code here to send message into the socket"""
-        pass
+        self.s.send(msg.encode('utf-8'))
+        print(f"\nSent: \"{msg}\"")
     
     def myreceive(self):
         """Add code here to read data from the socket"""
-        pass
+        self.data = self.s.recv(1024).decode('utf-8')
+        print(
+            f"\nServer msg: \"{self.data}\""
+        )
     
 '''
 This will be run if you run this script from the command line. You should not
@@ -57,3 +62,9 @@ if __name__ == "__main__":
     
     print("Client of ____")
     c = PaillierClientSocket(serverHost, serverPort)
+
+    c.mysend("100 Hello")
+    c.myreceive()
+
+    c.mysend("0 Welp...")
+    c.s.close()
