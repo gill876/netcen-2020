@@ -10,6 +10,8 @@ from socket import socket, AF_INET, SOCK_STREAM
 import random
 import math
 import sys
+import json
+import time
 
 class NumTheory:
     
@@ -33,7 +35,26 @@ class PaillierClientSocket:
         
     def ProcessMsgs(self):
         """Main event processing method"""
-        pass
+        msg_lst = self.data.split(" ")
+        code = ''
+        try:
+            code, rest = int(msg_lst[0]), msg_lst[1]
+        except Exception as e:
+            print(e)
+
+        if code == 105:
+            return 1
+
+        elif code == 106:
+            rest = json.loads(self.data[4:])
+            return 1
+
+        elif code == 107:
+            return 1
+
+        else:
+            print("Closing Client")
+            return 0
 
     def mysend(self, msg):
         """Add code here to send message into the socket"""
@@ -59,14 +80,25 @@ if __name__ == "__main__":
         sys.exit()
     serverHost = str(args[1])       # The remote host
     serverPort = int(args[2])       # The same port as used by the server
-    
+
     print("Client of ____")
     c = PaillierClientSocket(serverHost, serverPort)
 
     c.mysend("100 Hello")
-    c.myreceive()
-    c.myreceive()
-    c.myreceive()
+
+    while True:
+        c.myreceive()
+
+        msg = c.ProcessMsgs()
+
+        if msg == 0:
+            break
+
+        elif isinstance(msg, str):
+            c.mysend(msg)
+            time.sleep(1)
+
+        else:
+            continue
 
     c.mysend("0 Welp...")
-    c.s.close()
