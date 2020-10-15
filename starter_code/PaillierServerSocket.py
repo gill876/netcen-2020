@@ -88,11 +88,19 @@ class PaillierServerSocket:
     
     def mysend(self, msg):
         """Add code here to send message into the socket"""
-        pass
+        self.s.sendto(msg.encode('utf-8'), self.addr)
+        print(f"\nSent: \"{msg}\" to \"{self.addr}\"")
     
     def myreceive(self):
         """Add code here to read data from the socket"""
-        pass
+        
+        self.data, self.addr = s.recvfrom(1024)
+        self.data = self.data.decode('utf-8')
+
+        print(
+            f"\nClient addr: \"{self.addr}\"" +
+            f"\nClient msg: \"{self.data}\""
+        )
         
 '''
 This will be run if you run this script from the command line. You should not
