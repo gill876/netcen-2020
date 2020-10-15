@@ -10,6 +10,8 @@ from socket import socket, AF_INET, SOCK_STREAM
 import random
 import math
 import sys
+import json
+import time
 
 class NumTheory:
     # def __init__(self):
@@ -75,15 +77,29 @@ class PaillierServerSocket:
     def ProcessMsgs(self):
         """Main event processing method"""
         msg_lst = self.data.split(" ")
-        code, rest = int(msg_lst[0]), msg_lst[1]
+        code = ''
+        try:
+            code, rest = int(msg_lst[0]), msg_lst[1]
+        except Exception as e:
+            print(e)
 
         if code == 100:
-            output = f"105 Key {self.n} {self.gen}"
-            return output
+            msgs = []
+
+            key = f"105 Key {self.n} {self.gen}"
+            candidates = "106 " + json.dumps(self.candids)
+            polls = "107 Polls Open"
+            msgs = [key, candidates, polls]
+
+            return msgs
+
+        elif code == 115: # collect votes
+            pass
+
         else:
             self.s.close()
             print("Closing Server")
-            return 0
+            return [0]
 
     def connect(self, host=None, port=None):
         # Add code to connect to a host and port
@@ -113,6 +129,9 @@ class PaillierServerSocket:
             f"\nClient addr: \"{self.addr}\"" +
             f"\nClient msg: \"{self.data}\""
         )
+
+    def addCandid(self, candidates):
+        self.candids = candidates
         
 '''
 This will be run if you run this script from the command line. You should not
@@ -151,11 +170,15 @@ if __name__ == "__main__":
     s.n = str(n)
 
     s.connect()
+    candidates = [{"ID": 2**8, "Candidate": "John Brown"}, {"ID": 2**16, "Candidate": "Mary Black"}]
+    s.addCandid(candidates)
 
     while True:
         s.myreceive()
         msg = s.ProcessMsgs()
 
-        if msg == 0:
-            break
-        s.mysend(msg)
+        for m in msg:
+            if m == 0:
+                break
+            s.mysend(m)
+            time.sleep(1)

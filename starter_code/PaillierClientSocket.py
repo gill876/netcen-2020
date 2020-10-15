@@ -65,6 +65,8 @@ if __name__ == "__main__":
 
     c.mysend("100 Hello")
     c.myreceive()
+    c.myreceive()
+    c.myreceive()
 
     c.mysend("0 Welp...")
     c.s.close()
